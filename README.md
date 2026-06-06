@@ -104,3 +104,34 @@ We use **Vitest** and **React Testing Library** to run 100% automated test cover
 *   **Compile Production Bundle**: `npm run build`
 *   **Execute Test Suite**: `npx vitest run`
 *   **Generate Coverage Reports**: `npx vitest run --coverage`
+
+---
+
+## 🌐 Deploy to Render
+
+You can easily deploy MindShield AI to **Render** as a Static Site.
+
+### 1-Click Blueprint Deploy
+
+If you have connected your GitHub account to Render, click the button below to deploy this project automatically using the blueprint:
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/codecraftak/Mental-Awareness-Tracker)
+
+*(Note: If you have forked or cloned this repo to your own GitHub account, update the `repo` query parameter in the button URL above to point to your repository.)*
+
+### Manual Deploy Steps
+
+If you prefer to configure the deployment manually in the Render Dashboard:
+
+1. Click **New +** and select **Static Site**.
+2. Connect your GitHub repository.
+3. Use the following settings:
+   - **Name**: `mindshield-ai`
+   - **Build Command**: `npm run build`
+   - **Publish Directory**: `dist`
+4. Under the **Redirects/Rewrites** settings, add a routing rule:
+   - **Source**: `/*`
+   - **Destination**: `/index.html`
+   - **Action**: `Rewrite` (to support client-side Routing/Single Page Application structure).
+5. Click **Create Static Site**.
+

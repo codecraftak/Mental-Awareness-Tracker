@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: mindshield-ai
+    runtime: static
+    buildCommand: npm run build
+    staticPublishPath: dist
+    routes:
+      - src: /*
+        dest: /index.html
