@@ -68,7 +68,7 @@ export const analyzeJournalEntry = (content: string): JournalAnalysis => {
   }
 
   // Generate dynamic, supportive rules-based summary
-  let summary = '';
+  let summary: string;
   if (sentiment === 'positive') {
     summary = "Your entry shows a positive outlook. You're feeling focused or satisfied with your study progression.";
     if (growthMindsetIndicators.length > 0) {

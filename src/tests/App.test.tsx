@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from '../App';
@@ -10,17 +11,17 @@ vi.mock('canvas-confetti', () => ({
 // Mock Recharts completely to avoid JSDOM layout and SVG structure problems
 vi.mock('recharts', () => {
   return {
-    ResponsiveContainer: ({ children }: any) => <div data-testid="responsive-container">{children}</div>,
-    AreaChart: ({ children }: any) => <div data-testid="area-chart">{children}</div>,
+    ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div data-testid="responsive-container">{children}</div>,
+    AreaChart: ({ children }: { children: React.ReactNode }) => <div data-testid="area-chart">{children}</div>,
     Area: () => <div data-testid="area" />,
     XAxis: () => <div data-testid="xaxis" />,
     YAxis: () => <div data-testid="yaxis" />,
     Tooltip: () => <div data-testid="tooltip" />,
     Legend: () => <div data-testid="legend" />,
-    BarChart: ({ children }: any) => <div data-testid="bar-chart">{children}</div>,
+    BarChart: ({ children }: { children: React.ReactNode }) => <div data-testid="bar-chart">{children}</div>,
     Bar: () => <div data-testid="bar" />,
     Cell: () => <div data-testid="cell" />,
-    LineChart: ({ children }: any) => <div data-testid="line-chart">{children}</div>,
+    LineChart: ({ children }: { children: React.ReactNode }) => <div data-testid="line-chart">{children}</div>,
     Line: () => <div data-testid="line" />,
     CartesianGrid: () => <div data-testid="grid" />,
   };

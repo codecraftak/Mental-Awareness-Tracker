@@ -128,6 +128,36 @@ export const generateCoachRecommendations = (checkIn: CheckIn | undefined): Coac
     });
   }
 
+  if (checkIn.triggers.includes('Family expectations')) {
+    recommendations.push({
+      id: 'rec-trigger-family',
+      title: 'Expectation Separation Exercise',
+      description: 'Understand that family concern often manifests as academic pressure. Write down your goals for yourself to separate internal vs external standards.',
+      type: 'confidence',
+      actionLabel: 'Journal Goals'
+    });
+  }
+
+  if (checkIn.triggers.includes('Time management')) {
+    recommendations.push({
+      id: 'rec-trigger-time',
+      title: 'Time Auditing & Blocking',
+      description: 'Avoid multitasking. Time-box tasks into 45-minute deep blocks followed by 15-minute complete detachment breaks.',
+      type: 'academic',
+      actionLabel: 'Start Time Block'
+    });
+  }
+
+  if (checkIn.triggers.includes('Future uncertainty')) {
+    recommendations.push({
+      id: 'rec-trigger-future',
+      title: 'Circle of Control Exercise',
+      description: 'Draw a circle. Inside, list things you control today (study hours, sleep, attitude). Outside, list things you cannot control (exam questions, ranks). Focus on the inside.',
+      type: 'confidence',
+      actionLabel: 'Do Exercise'
+    });
+  }
+
   // 6. Ideal Prep State Optimization (High Confidence, low stress)
   if (checkIn.stressLevel <= 4 && checkIn.confidenceLevel >= 7 && checkIn.energyLevel >= 7) {
     recommendations.push({

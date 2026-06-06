@@ -12,7 +12,7 @@ interface JournalReflectionProps {
   lastJournalEntry?: JournalEntry;
 }
 
-export const JournalReflection = ({ onJournalSubmitted, lastJournalEntry: _lastJournalEntry }: JournalReflectionProps) => {
+export const JournalReflection = ({ onJournalSubmitted, lastJournalEntry }: JournalReflectionProps) => {
   const todayStr = new Date().toISOString().split('T')[0];
 
   const prompts = [
@@ -112,6 +112,29 @@ export const JournalReflection = ({ onJournalSubmitted, lastJournalEntry: _lastJ
         </CardHeader>
 
         <CardContent className="p-6 flex-grow">
+          {lastJournalEntry && (
+            <div className="mb-5 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800/80 text-xs text-slate-600 dark:text-slate-400 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+                  Previous Reflection ({lastJournalEntry.date})
+                </span>
+                <Badge
+                  variant={
+                    lastJournalEntry.analysis.sentiment === 'positive'
+                      ? 'success'
+                      : lastJournalEntry.analysis.sentiment === 'negative'
+                      ? 'destructive'
+                      : 'secondary'
+                  }
+                  className="text-[9px] uppercase font-bold px-1.5 py-0"
+                >
+                  {lastJournalEntry.analysis.sentiment}
+                </Badge>
+              </div>
+              <p className="italic line-clamp-2 text-slate-700 dark:text-slate-300">"{lastJournalEntry.content}"</p>
+            </div>
+          )}
+
           {success && (
             <div className="mb-4 p-4 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 text-indigo-800 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/40 flex items-center space-x-3 text-sm animate-fade-in" role="alert">
               <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400 shrink-0" />

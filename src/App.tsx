@@ -27,8 +27,8 @@ import {
 
 function App() {
   const [activeTab, setActiveTab] = useState<string>('dashboard');
-  const [checkIns, setCheckIns] = useState<CheckIn[]>([]);
-  const [journals, setJournals] = useState<JournalEntry[]>([]);
+  const [checkIns, setCheckIns] = useState<CheckIn[]>(() => getCheckIns());
+  const [journals, setJournals] = useState<JournalEntry[]>(() => getJournalEntries());
   
   // Theme state
   const [darkMode, setDarkMode] = useState<boolean>(() => {
@@ -38,12 +38,6 @@ function App() {
       return false;
     }
   });
-
-  // Load storage data on mount
-  useEffect(() => {
-    setCheckIns(getCheckIns());
-    setJournals(getJournalEntries());
-  }, []);
 
   // Update theme classes on change
   useEffect(() => {
@@ -198,7 +192,7 @@ function App() {
         </div>
 
         {/* BOTTOM NAV BAR (Mobile Only) */}
-        <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-2 py-1 flex justify-around shadow-lg">
+        <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-2 py-1 flex justify-around shadow-lg" aria-label="Mobile Bottom Navigation">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;

@@ -29,7 +29,7 @@ export const CoachPanel = ({ latestCheckIn }: CoachPanelProps) => {
   const [timer, setTimer] = useState(4);
 
   React.useEffect(() => {
-    let interval: any;
+    let interval: ReturnType<typeof setInterval> | undefined = undefined;
     if (activeExercise && activeExercise.type === 'breathing') {
       interval = setInterval(() => {
         setTimer((prev) => {

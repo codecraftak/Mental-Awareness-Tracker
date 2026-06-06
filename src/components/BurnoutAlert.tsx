@@ -18,7 +18,7 @@ export const BurnoutAlert = ({ report }: BurnoutAlertProps) => {
 
   // Breathing Guide Loop
   React.useEffect(() => {
-    let interval: any;
+    let interval: ReturnType<typeof setInterval> | undefined = undefined;
     if (showBreathingModal) {
       interval = setInterval(() => {
         setTimer((prev) => {

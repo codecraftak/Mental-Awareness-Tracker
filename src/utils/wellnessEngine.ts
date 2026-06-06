@@ -59,9 +59,9 @@ export const calculateBurnoutReport = (checkIns: CheckIn[]): BurnoutReport => {
   // Cap score between 0 and 100
   const score = Math.round(Math.min(100, Math.max(0, baseScore)));
 
-  let riskLevel: BurnoutRiskLevel = 'Low';
-  let explanation = '';
-  let intervention = '';
+  let riskLevel: BurnoutRiskLevel;
+  let explanation: string;
+  let intervention: string;
 
   if (score >= 70) {
     riskLevel = 'High';

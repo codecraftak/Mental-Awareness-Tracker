@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 interface TabsContextProps {
   value: string;
@@ -20,17 +20,14 @@ export const Tabs = ({
   children: React.ReactNode;
   className?: string;
 }) => {
-  const [activeTab, setActiveTab] = useState(value || defaultValue || '');
+  const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue || '');
 
-  useEffect(() => {
-    if (value !== undefined) {
-      setActiveTab(value);
-    }
-  }, [value]);
+  // Determine source of truth
+  const activeTab = value !== undefined ? value : uncontrolledValue;
 
   const handleTabChange = (val: string) => {
     if (value === undefined) {
-      setActiveTab(val);
+      setUncontrolledValue(val);
     }
     if (onValueChange) {
       onValueChange(val);
