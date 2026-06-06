@@ -1,4 +1,3 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { Dashboard } from './components/Dashboard';
 import { DailyCheckIn } from './components/DailyCheckIn';
@@ -7,15 +6,7 @@ import { CoachPanel } from './components/CoachPanel';
 import { SupportCenter } from './components/SupportCenter';
 import { BurnoutAlert } from './components/BurnoutAlert';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import {
-  getCheckIns,
-  getJournalEntries,
-  saveCheckIn,
-  saveJournalEntry,
-  calculateStreaks,
-} from './services/storageService';
-import { calculateBurnoutReport, generateWeeklyInsights } from './utils/wellnessEngine';
-import { CheckIn, JournalEntry } from './types';
+import { useWellnessState } from './hooks/useWellnessState';
 import {
   LayoutDashboard,
   Calendar,
@@ -26,82 +17,20 @@ import {
 } from 'lucide-react';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
-  const [checkIns, setCheckIns] = useState<CheckIn[]>(() => getCheckIns());
-  const [journals, setJournals] = useState<JournalEntry[]>(() => getJournalEntries());
-  
-  // Theme state
-  const [darkMode, setDarkMode] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem('mindshield_dark') === 'true';
-    } catch {
-      return false;
-    }
-  });
-
-  // Update theme classes on change
-  useEffect(() => {
-    try {
-      if (darkMode) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('mindshield_dark', 'true');
-      } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('mindshield_dark', 'false');
-      }
-    } catch (err) {
-      console.error('Failed to set theme in localStorage:', err);
-    }
-  }, [darkMode]);
-
-  // Handle new check-in submission (memorized to optimize renders)
-  const handleCheckInSubmitted = useCallback((newCheckIn: Omit<CheckIn, 'id'>) => {
-    const saved = saveCheckIn(newCheckIn);
-    setCheckIns(prev => {
-      const idx = prev.findIndex(c => c.id === saved.id || c.date === saved.date);
-      if (idx >= 0) {
-        const next = [...prev];
-        next[idx] = saved;
-        return next;
-      }
-      return [...prev, saved].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    });
-  }, []);
-
-  // Handle new journal submission (memorized)
-  const handleJournalSubmitted = useCallback((newJournal: Omit<JournalEntry, 'id'>) => {
-    const saved = saveJournalEntry(newJournal);
-    setJournals(prev => {
-      const idx = prev.findIndex(j => j.id === saved.id || j.date === saved.date);
-      if (idx >= 0) {
-        const next = [...prev];
-        next[idx] = saved;
-        return next;
-      }
-      return [...prev, saved].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    });
-  }, []);
-
-  // Computations
-  const streakInfo = useMemo(() => {
-    return calculateStreaks(checkIns, journals);
-  }, [checkIns, journals]);
-
-  const burnoutReport = useMemo(() => {
-    return calculateBurnoutReport(checkIns);
-  }, [checkIns]);
-
-  const insights = useMemo(() => {
-    return generateWeeklyInsights(checkIns);
-  }, [checkIns]);
-
-  const latestCheckIn = useMemo(() => {
-    return checkIns[checkIns.length - 1];
-  }, [checkIns]);
-
-  const latestJournal = useMemo(() => {
-    return journals[journals.length - 1];
-  }, [journals]);
+  const {
+    activeTab,
+    setActiveTab,
+    checkIns,
+    darkMode,
+    setDarkMode,
+    streakInfo,
+    burnoutReport,
+    insights,
+    latestCheckIn,
+    latestJournal,
+    handleCheckInSubmitted,
+    handleJournalSubmitted,
+  } = useWellnessState();
 
   // Sidebar Menu Config
   const menuItems = [

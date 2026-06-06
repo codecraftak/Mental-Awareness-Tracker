@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BurnoutReport } from '../types';
 import { Card, CardContent } from './ui/Card';
 import { Badge } from './ui/Badge';
 import { Button } from './ui/Button';
 import { Dialog } from './ui/Dialog';
 import { AlertOctagon, Heart, RefreshCw, X, UserCheck, FlameKindling } from 'lucide-react';
+import { useBreathingLoop } from '../hooks/useBreathingLoop';
 
 interface BurnoutAlertProps {
   report: BurnoutReport;
@@ -12,31 +13,9 @@ interface BurnoutAlertProps {
 
 export const BurnoutAlert = ({ report }: BurnoutAlertProps) => {
   const [showBreathingModal, setShowBreathingModal] = useState(false);
-  const [breathingStep, setBreathingStep] = useState<'inhale' | 'hold' | 'exhale' | 'hold2'>('inhale');
-  const [timer, setTimer] = useState(4);
   const [isDismissed, setIsDismissed] = useState(false);
 
-  // Breathing Guide Loop
-  React.useEffect(() => {
-    let interval: ReturnType<typeof setInterval> | undefined = undefined;
-    if (showBreathingModal) {
-      interval = setInterval(() => {
-        setTimer((prev) => {
-          if (prev === 1) {
-            setBreathingStep((step) => {
-              if (step === 'inhale') { setTimer(4); return 'hold'; }
-              if (step === 'hold') { setTimer(4); return 'exhale'; }
-              if (step === 'exhale') { setTimer(4); return 'hold2'; }
-              setTimer(4); return 'inhale';
-            });
-            return 4;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [showBreathingModal, breathingStep]);
+  const { breathingStep, timer, resetBreathing } = useBreathingLoop(showBreathingModal);
 
   if (report.riskLevel === 'Low' || isDismissed) return null;
 
@@ -149,10 +128,7 @@ export const BurnoutAlert = ({ report }: BurnoutAlertProps) => {
 
           <div className="flex justify-center space-x-2 pt-2">
             <Button
-              onClick={() => {
-                setBreathingStep('inhale');
-                setTimer(4);
-              }}
+              onClick={resetBreathing}
               variant="outline"
               size="sm"
               className="text-xs"

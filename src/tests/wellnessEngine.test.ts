@@ -105,4 +105,41 @@ describe('wellnessEngine - Weekly Insights Generator', () => {
     expect(sleepMoodInsight).toBeDefined();
     expect(sleepMoodInsight?.message).toContain('sleep exceeds 7 hours');
   });
+
+  it('should handle less than 3 check-ins with an informational message', () => {
+    const insights = generateWeeklyInsights([]);
+    expect(insights.length).toBe(1);
+    expect(insights[0].id).toBe('ins-default');
+    expect(insights[0].message).toContain('More wellness data is needed');
+  });
+});
+
+describe('wellnessEngine - Boundary Cases & Extreme Inputs', () => {
+  it('should return score 0 for empty check-ins array', () => {
+    const report = calculateBurnoutReport([]);
+    expect(report.score).toBe(0);
+    expect(report.riskLevel).toBe('Low');
+    expect(report.explanation).toContain('No check-in history available');
+  });
+
+  it('should cap burnout score at 100 for maximum stress, low sleep, and low satisfaction', () => {
+    const maxStrainCheckIns: CheckIn[] = [
+      { id: '1', date: '2026-06-01', mood: 'sad', stressLevel: 10, energyLevel: 1, confidenceLevel: 1, sleepHours: 0, studySatisfaction: 1, triggers: [] },
+      { id: '2', date: '2026-06-02', mood: 'sad', stressLevel: 10, energyLevel: 1, confidenceLevel: 1, sleepHours: 0, studySatisfaction: 1, triggers: [] },
+      { id: '3', date: '2026-06-03', mood: 'sad', stressLevel: 10, energyLevel: 1, confidenceLevel: 1, sleepHours: 0, studySatisfaction: 1, triggers: [] }
+    ];
+    const report = calculateBurnoutReport(maxStrainCheckIns);
+    expect(report.score).toBe(100);
+    expect(report.riskLevel).toBe('High');
+  });
+
+  it('should calculate triggers cleanly even when no triggers are checked', () => {
+    const emptyTriggersCheckIns: CheckIn[] = [
+      { id: '1', date: '2026-06-01', mood: 'neutral', stressLevel: 5, energyLevel: 5, confidenceLevel: 5, sleepHours: 7, studySatisfaction: 5, triggers: [] }
+    ];
+    const { frequencies, mostCommon, triggerCount } = analyzeTriggers(emptyTriggersCheckIns);
+    expect(triggerCount).toBe(0);
+    expect(mostCommon).toBe('None');
+    expect(frequencies.every(f => f.count === 0 && f.percentage === 0)).toBe(true);
+  });
 });

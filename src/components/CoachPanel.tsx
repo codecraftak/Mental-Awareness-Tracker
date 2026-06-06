@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CoachRecommendation, CheckIn } from '../types';
 import { generateCoachRecommendations } from '../utils/coachEngine';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from './ui/Card';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
 import { Dialog } from './ui/Dialog';
+import { useBreathingLoop } from '../hooks/useBreathingLoop';
 import {
   Compass,
   Moon,
@@ -24,30 +25,8 @@ export const CoachPanel = ({ latestCheckIn }: CoachPanelProps) => {
   const recommendations = generateCoachRecommendations(latestCheckIn);
   const [activeExercise, setActiveExercise] = useState<CoachRecommendation | null>(null);
   
-  // Custom Breathing State inside the Coach Panel
-  const [breathingStep, setBreathingStep] = useState<'inhale' | 'hold' | 'exhale' | 'hold2'>('inhale');
-  const [timer, setTimer] = useState(4);
-
-  React.useEffect(() => {
-    let interval: ReturnType<typeof setInterval> | undefined = undefined;
-    if (activeExercise && activeExercise.type === 'breathing') {
-      interval = setInterval(() => {
-        setTimer((prev) => {
-          if (prev === 1) {
-            setBreathingStep((step) => {
-              if (step === 'inhale') { setTimer(4); return 'hold'; }
-              if (step === 'hold') { setTimer(4); return 'exhale'; }
-              if (step === 'exhale') { setTimer(4); return 'hold2'; }
-              setTimer(4); return 'inhale';
-            });
-            return 4;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [activeExercise, breathingStep]);
+  const isBreathingActive = !!(activeExercise && activeExercise.type === 'breathing');
+  const { breathingStep, timer } = useBreathingLoop(isBreathingActive);
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -68,10 +47,6 @@ export const CoachPanel = ({ latestCheckIn }: CoachPanelProps) => {
 
   const handleActionClick = (rec: CoachRecommendation) => {
     setActiveExercise(rec);
-    if (rec.type === 'breathing') {
-      setBreathingStep('inhale');
-      setTimer(4);
-    }
   };
 
   return (

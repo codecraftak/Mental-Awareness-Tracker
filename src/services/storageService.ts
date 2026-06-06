@@ -4,10 +4,24 @@ import { generateMockHistory } from '../data/mockData';
 const CHECK_INS_KEY = 'mindshield_checkins';
 const JOURNAL_KEY = 'mindshield_journals';
 
+let isLocalStorageAvailable = false;
+try {
+  const testKey = '__storage_test__';
+  localStorage.setItem(testKey, testKey);
+  const retrieved = localStorage.getItem(testKey);
+  localStorage.removeItem(testKey);
+  isLocalStorageAvailable = retrieved === testKey;
+} catch {
+  isLocalStorageAvailable = false;
+}
+
 // In-memory fallback if localStorage is unavailable
 const memoryStorage: Record<string, string> = {};
 
 const safeGetItem = (key: string): string | null => {
+  if (!isLocalStorageAvailable) {
+    return memoryStorage[key] ?? null;
+  }
   try {
     return localStorage.getItem(key) ?? memoryStorage[key] ?? null;
   } catch (error) {
@@ -17,12 +31,17 @@ const safeGetItem = (key: string): string | null => {
 };
 
 const safeSetItem = (key: string, value: string): void => {
+  memoryStorage[key] = value;
+  if (!isLocalStorageAvailable) {
+    return;
+  }
   try {
     localStorage.setItem(key, value);
   } catch (error) {
     console.error(`Error writing key "${key}" to localStorage:`, error);
+    // If writing fails (e.g. QuotaExceededError), downgrade availability
+    isLocalStorageAvailable = false;
   }
-  memoryStorage[key] = value;
 };
 
 // Initialize with mock data if no storage exists
